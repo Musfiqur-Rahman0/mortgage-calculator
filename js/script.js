@@ -8,17 +8,25 @@ clearInputBtn.addEventListener("click", () => {
 
 // toggle between selected radio input.
 function selectedRadioInput(selectedElement, otherElement) {
-  selectedType = selectedElement.id;
+  selectedType =
+    selectedType === selectedElement.id ? null : selectedElement.id;
   console.log(selectedType);
-  toggleClasses(otherElement, [], ["border-[#d7da2f]", "bg-yellow-50"]);
-  toggleClasses(
-    selectedElement,
-    ["border-[#d7da2f]", "bg-yellow-50"],
-    ["border-gray-400"]
-  );
 
   const selectedElementDot = selectedElement.children[1];
   const otherElementDot = otherElement.children[1];
+
+  if (selectedType) {
+    toggleClasses(otherElement, [], ["border-[#d7da2f]", "bg-yellow-50"]);
+    toggleClasses(
+      selectedElement,
+      ["border-[#d7da2f]", "bg-yellow-50"],
+      ["border-gray-400"]
+    );
+  } else {
+    toggleClasses(selectedElement, [], ["border-[#d7da2f]", "bg-yellow-50"]);
+    const selectedDot = selectedElement.querySelector(".dot");
+    selectedDot?.remove();
+  }
 
   otherElementDot.querySelector(".dot")?.remove();
 
@@ -52,7 +60,13 @@ submitBtn.addEventListener("click", (e) => {
     inputValues[input.name] = parseFloat(input.value);
   });
   if (isValid) {
-    calculateMortgage(inputValues);
+    if (selectedType === "repayments") {
+      paytype.textContent = selectedType;
+      calculateMortgage(inputValues);
+    } else if (selectedType === "interest-only") {
+      paytype.textContent = "Interest";
+      calculateInterestOnly(inputValues);
+    }
     validateRadioInput();
     allInputs.forEach((input) => {
       const parentEl = input.parentNode;
@@ -72,14 +86,29 @@ function calculateMortgage(obj) {
   const p = loanAmount;
   const n = year * 12;
   if (r === 0) {
-    return p / n;
+    const m = p / n;
+    repaymentsAmmount.textContent = m.toFixed(2);
   }
-  // const test = (p * r * (1 + r) ** n) / ((1 + r) ** n - 1);
-  // console.log(test);
+
   const m = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
   const totalRepay = (m * n).toFixed(2);
   repaymentsAmmount.innerText = m.toFixed(2);
   totalRepayments.textContent = totalRepay;
+}
+function calculateInterestOnly(obj) {
+  const {
+    ["interest-rate"]: interestRate,
+    ["loan-ammount"]: loanAmount,
+    year,
+  } = obj;
+  if (interestRate === 0) {
+    const i = p / n;
+    repaymentsAmmount.textContent = i.toFixed(2);
+  }
+  const interest = (loanAmount * interestRate) / (100 * 12);
+  const totalPayAmmount = interest * (year * 12) + loanAmount;
+  repaymentsAmmount.textContent = interest.toFixed(2);
+  totalRepayments.textContent = totalPayAmmount;
 }
 
 function validationErrorMassage(input) {

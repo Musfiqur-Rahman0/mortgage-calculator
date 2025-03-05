@@ -8,6 +8,7 @@ const resultTitle = document.getElementById("display-result-title");
 const resultDisplay = document.getElementById("display-results");
 const repaymentsAmmount = document.getElementById("repayments-ammount");
 const totalRepayments = document.getElementById("total-repayments-ammout");
+const paytype = document.getElementById("selectedOption");
 // const radioInputs = document.querySelectorAll("input[type ='radio']");
 
 // console.log(resultDisplay, resultTitle);
