@@ -1,4 +1,5 @@
 // cleaning all the inputs value when the user click clean all buttons.
+let selectedType = null;
 clearInputBtn.addEventListener("click", () => {
   allInputs.forEach((input) => {
     input.value = "";
@@ -6,60 +7,59 @@ clearInputBtn.addEventListener("click", () => {
 });
 
 // toggle between selected radio input.
-let selectedType = null;
-typeContainer.addEventListener("click", (e) => {
-  const element = e.target;
-  const dot = document.createElement("div");
-  dot.className = "w-3 h-3 rounded-full bg-[#d7da2f] dot";
-  if (element.id === "repayments") {
-    selectedType = element.id;
-    removeClass(repayments, "border-gray-400");
-    removeClass(interestOnly, "border-[#d7da2f]");
-    removeClass(interestOnly, "bg-yellow-50");
-    repayments.classList.add("border-[#d7da2f]", "bg-yellow-50");
-    const radio = repayments.children[1];
-    const reDot = interestOnly.children[1];
-    if (reDot.querySelector(".dot")) {
-      reDot.innerHTML = "";
-    }
+function selectedRadioInput(selectedElement, otherElement) {
+  selectedType = selectedElement.id;
+  console.log(selectedType);
+  toggleClasses(otherElement, [], ["border-[#d7da2f]", "bg-yellow-50"]);
+  toggleClasses(
+    selectedElement,
+    ["border-[#d7da2f]", "bg-yellow-50"],
+    ["border-gray-400"]
+  );
 
-    repayments.classList.add("border-[#d7da2f]", "bg-yellow-50");
-    if (!radio.querySelector(".dot")) {
-      radio.appendChild(dot);
-    }
-  } else if (element.id === "interest-only") {
-    selectedType = element.id;
-    removeClass(interestOnly, "border-gray-400");
-    removeClass(repayments, "border-[#d7da2f]");
-    removeClass(repayments, "bg-yellow-50");
-    const reDot = repayments.children[1];
-    if (reDot.querySelector(".dot")) {
-      reDot.innerHTML = "";
-    }
-    interestOnly.classList.add("border-[#d7da2f]", "bg-yellow-50");
-    const radio = interestOnly.children[1];
-    if (!radio.querySelector(".dot")) {
-      radio.appendChild(dot);
-    }
+  const selectedElementDot = selectedElement.children[1];
+  const otherElementDot = otherElement.children[1];
+
+  otherElementDot.querySelector(".dot")?.remove();
+
+  if (!selectedElementDot.querySelector(".dot")) {
+    const dot = document.createElement("div");
+    dot.className = "h-3 w-3 rounded-full bg-[#d7da2f] dot";
+    selectedElementDot.appendChild(dot);
+  }
+}
+
+typeContainer.addEventListener("click", (e) => {
+  const element = e.target.id;
+  if (element === "repayments") {
+    selectedRadioInput(repayments, interestOnly);
+  } else if (element === "interest-only") {
+    selectedRadioInput(interestOnly, repayments);
   }
 });
 
 submitBtn.addEventListener("click", (e) => {
   e.preventDefault();
 
+  let isValid = true;
   const inputValues = {};
-  const keys = ["loan-ammount", "year", "interest-rate"];
-  allInputs.forEach((input, index) => {
+
+  allInputs.forEach((input) => {
     if (input.value === "") {
+      isValid = false;
       validationErrorMassage(input);
-    } else {
-      addClass(resultTitle, "hidden");
-      removeClass(resultDisplay, "hidden");
     }
-    inputValues[keys[index]] = parseFloat(input.value);
+    inputValues[input.name] = parseFloat(input.value);
   });
-  const result = calculateMortgage(inputValues);
-  setResultData(result);
+  if (isValid) {
+    calculateMortgage(inputValues);
+    validateRadioInput();
+    allInputs.forEach((input) => {
+      const parentEl = input.parentNode;
+
+      parentEl.parentNode.querySelector(".error-massage")?.remove;
+    });
+  }
 });
 
 function calculateMortgage(obj) {
@@ -85,16 +85,32 @@ function calculateMortgage(obj) {
 function validationErrorMassage(input) {
   const parentEl = input.parentNode;
   const buttonEl = parentEl.querySelector('button[type="button"]');
-  parentEl.classList.add("border", "border-red-500");
-  removeClass(parentEl, "border-[#e3f3fd]");
-  buttonEl.classList.remove("text-[#4e6e7e]", "bg-[#e3f3fd]", "lime");
-  buttonEl.classList.add("text-white", "bg-red-500");
 
-  const errorMassage = document.createElement("p");
-  errorMassage.className = "text-sm text-red-500 mt-1";
-  errorMassage.innerText = "This field is required";
+  toggleClasses(parentEl, ["border", "border-red-500"], ["border-[#e3f3fd]"]);
+  toggleClasses(
+    buttonEl,
+    ["text-white", "bg-red-500"],
+    ["text-[#4e6e7e]", "lime"]
+  );
 
-  if (!parentEl.parentNode.querySelector("p")) {
+  if (!parentEl.parentNode.querySelector(".error-massage")) {
+    const errorMassage = document.createElement("p");
+    errorMassage.className = "text-sm text-red-500 mt-1 error-massage";
+    errorMassage.innerText = "This field is required";
     parentEl.parentNode.appendChild(errorMassage);
+  }
+}
+function validateRadioInput() {
+  const errorExists = !!typeContainer.querySelector(".error-massage");
+
+  if (!selectedType && !errorExists) {
+    const errorMessage = document.createElement("p");
+    errorMessage.className = "text-sm text-red-500 mt-1 error-massage";
+    errorMessage.innerText = "Please select an option";
+    typeContainer.appendChild(errorMessage);
+  } else if (selectedType) {
+    addClass(resultTitle, "hidden");
+    removeClass(resultDisplay, "hidden");
+    typeContainer.querySelector(".error-massage")?.remove();
   }
 }

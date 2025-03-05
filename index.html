@@ -65,7 +65,8 @@
                     <label class="font-semibold  sub-title text-sm" for="ammout">Mortgage Amount</label>
                     <div class="w-full flex items-center rounded-lg overflow-hidden mt-2 border border-[#d7da2f] h-10">
                         <button type="button" class="h-full px-5 lime font-semibold ">$</button>
-                        <input type="number" class=" h-full w-full outline-none rounded-r-lg pl-3" type="text"
+                        <input required type="number" name="loan-ammount"
+                            class=" h-full w-full outline-none rounded-r-lg pl-3" type="text"
                             placeholder="Enter amount">
                     </div>
                 </div>
@@ -75,8 +76,8 @@
                     <div class="w-full lg:half-w relative">
                         <label for="mortgage-term" class="sub-title font-semibold text-sm">Mortgage Term</label>
                         <div class="mt-1 flex items-center h-10 rounded-lg overflow-hidden border border-[#e3f3fd]">
-                            <input type="number" class=" pl-3 h-full outline-none border-none" type="text"
-                                placeholder="Enter Year">
+                            <input required type="number" name="year" class=" pl-3 h-full outline-none border-none"
+                                type="text" placeholder="Enter Year">
                             <button type="button"
                                 class="absolute h-10 cursor-pointer right-0 rounded-r-lg bg-[#e3f3fd] px-3 text-[#4e6e7e] font-semibold">Year</button>
                         </div>
@@ -84,8 +85,8 @@
                     <div class="w-full lg:half-w relative">
                         <label for="interest-rate" class="sub-title font-semibold text-sm">Interest Rate</label>
                         <div class="mt-1 flex items-center h-10 rounded-lg overflow-hidden border border-[#e3f3fd]">
-                            <input type="number" class=" pl-3 h-full outline-none border-none" type="text"
-                                placeholder="Interest-rate">
+                            <input required type="number" name="interest-rate"
+                                class=" pl-3 h-full outline-none border-none" type="text" placeholder="Interest-rate">
                             <button type="button"
                                 class="h-10 absolute right-0 cursor-pointer rounded-r-lg bg-[#e3f3fd] px-3 text-[#4e6e7e] font-semibold">%</button>
                         </div>
